@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+.Python
+build/
+dist/
+develop-eggs/
+.eggs/
+
+# Virtual environment
+.venv/
+pip-log.txt
+pip-delete-this-arg.txt
+
+# IDEs and editors
+.vscode/
+*.swp
+*~
+
+# Logs, databases and environment files
+*.log
+.env
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# FastAPI specific (optional, depending on project setup)
+# If you generate static documentation files
+docs/build/
