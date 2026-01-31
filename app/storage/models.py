@@ -15,7 +15,9 @@ class Anualidades (SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     #created_at: str | None = Field(default=None, nullable=True)
     anualidad: float
-    aprobado: bool | None = None
+    monto: float
+    tasa_anual: float
+    plazo_meses: float
     nombre_identificador: str | None = None
     id_grupo: str
 

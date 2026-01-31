@@ -14,6 +14,9 @@ settings = get_settings()
 engine = create_engine(settings.database_url, echo=True)
 
 def persiste_tabla_amortizacion (
+		monto: float,
+		tasa_anual: float,
+		plazo_meses: float,
 		nombre_identificador: str,
 		id_grupo: str,
 		tabla_amortizacion: list[tuple[int, float, float, float, float]] ):
@@ -42,6 +45,9 @@ def persiste_tabla_amortizacion (
 		session.add_all(amortizaciones)
 		anualidad = Anualidades(
 			anualidad=termino_amortizacion,
+			monto=monto,
+			tasa_anual=tasa_anual,
+			plazo_meses=plazo_meses,
 			nombre_identificador=nombre_identificador,
 			id_grupo=id_grupo)
 		

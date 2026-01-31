@@ -40,7 +40,13 @@ async def simulate(prestamo: Prestamo):
 	id_grupo = genera_string_aleatorio(16)
 	auditoria = await make_auditoria_de_riesgo()
 	
-	persiste_tabla_amortizacion(prestamo_dic["nombre_identificador"], id_grupo, tabla_amortizacion)
+	persiste_tabla_amortizacion(
+		prestamo_dic["monto"],
+		prestamo_dic["tasa_anual"],
+		prestamo_dic["plazo_meses"],
+		prestamo_dic["nombre_identificador"],
+		id_grupo,
+		tabla_amortizacion)
 	persiste_auditoria_riesgo(id_grupo, auditoria)
 
 	return tabla_amortizacion
