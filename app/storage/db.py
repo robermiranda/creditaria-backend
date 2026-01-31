@@ -11,7 +11,7 @@ def get_settings():
     return Settings() # type: ignore
 
 settings = get_settings()
-engine = create_engine(settings.database_url, echo=True)
+engine = create_engine(settings.database_url)
 
 def persiste_tabla_amortizacion (
 		monto: float,

@@ -1,10 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
 from app.lib.amortizacion import calcula_tabla_amortizacion
-from app.lib.util import genera_string_aleatorio
-from app.lib.external import make_auditoria_de_riesgo
-from app.storage.db import persiste_tabla_amortizacion
-from app.storage.db import persiste_auditoria_riesgo
+from app.background.tasks import todo_in_background
 
 
 class Prestamo(BaseModel):
@@ -31,22 +28,17 @@ async def root():
 			Los datos de cada renglón son los siguientes:
 			[periodo o mes, anualidad, Interés, Amortización, Capital]
 		""")
-async def simulate(prestamo: Prestamo):
+async def simulate(prestamo: Prestamo, background_tasks: BackgroundTasks):
 
 	prestamo_dic = prestamo.model_dump()
 	tasa_mes = prestamo_dic["tasa_anual"] / 12
 	prestamo_dic.update({"tasa_mes": tasa_mes})
 	tabla_amortizacion = calcula_tabla_amortizacion(prestamo_dic["monto"], tasa_mes, prestamo_dic["plazo_meses"])
-	id_grupo = genera_string_aleatorio(16)
-	auditoria = await make_auditoria_de_riesgo()
 	
-	persiste_tabla_amortizacion(
-		prestamo_dic["monto"],
-		prestamo_dic["tasa_anual"],
-		prestamo_dic["plazo_meses"],
-		prestamo_dic["nombre_identificador"],
-		id_grupo,
-		tabla_amortizacion)
-	persiste_auditoria_riesgo(id_grupo, auditoria)
-
+	background_tasks.add_task (
+		todo_in_background,
+		prestamo_dic,
+		tabla_amortizacion )
+	
+	print('###############> MAIN: SE RESPONDIENDO LA TABLA DE AMORTIZACIÓN')
 	return tabla_amortizacion
