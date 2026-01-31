@@ -1,20 +1,21 @@
 from app.lib.util import genera_string_aleatorio
 from sqlmodel import create_engine, Session
-from app.storage.models import Amortizaciones, Anualidades
+from app.storage.models import Amortizaciones, Anualidades, Auditoria
 from functools import lru_cache
 from config import Settings
+from ..lib.external import ScoringRiesgo
 
 
 @lru_cache()
 def get_settings():
-    return Settings()
+    return Settings() # type: ignore
 
 settings = get_settings()
-print('DATA BASE URL FROM .ENV', settings.database_url)
 engine = create_engine(settings.database_url, echo=True)
 
 def persiste_tabla_amortizacion (
 		nombre_identificador: str,
+		id_grupo: str,
 		tabla_amortizacion: list[tuple[int, float, float, float, float]] ):
 	
 	"""
@@ -25,7 +26,6 @@ def persiste_tabla_amortizacion (
 	termino_amortizacion: float = tabla_amortizacion[1][1]
 	
     # Un identificador para relacionar a todas las tuplas de la tabla de amortización
-	id_grupo = genera_string_aleatorio(16)
 
 	with Session(engine) as session:
 		amortizaciones = []
@@ -48,3 +48,22 @@ def persiste_tabla_amortizacion (
 		session.add(anualidad)
 		session.commit()
 		session.refresh(anualidad)
+
+
+def persiste_auditoria_riesgo(id_grupo: str, scoring: ScoringRiesgo):
+	"""
+	Inserta en base de datos el resultado de la Auditoria de Riesgo
+	"""
+	
+	auditoria = Auditoria(
+		umbral=scoring.umbral,
+		delay=scoring.delay,
+		randomVal=scoring.randomVal,
+		valida=scoring.valida,
+		id_grupo=id_grupo)
+	
+	with Session(engine) as session:
+		session.add(auditoria)
+		session.commit()
+		session.refresh(auditoria)
+		

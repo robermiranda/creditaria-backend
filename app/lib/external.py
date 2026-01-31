@@ -1,8 +1,16 @@
 import httpx
 from fastapi import HTTPException
+from pydantic import BaseModel
 
 
-async def fetch_scoring_service(umbral: float):
+class ScoringRiesgo(BaseModel):
+    umbral: float
+    delay: float
+    randomVal: float
+    valida: bool
+
+
+async def fetch_scoring_service(umbral: float) -> ScoringRiesgo:
     """
     para simular una Auditoría de riesgo se ha creado una edge function la cual es una función
     lambda que recibe el parámetro umbral el cual representa la probabilidad de fallar.
@@ -23,8 +31,14 @@ async def fetch_scoring_service(umbral: float):
         try:
             response = await client.get(servicio_externo_scoring_url, timeout=10.0)
             response.raise_for_status() # Raise an exception for 4xx/5xx responses
-            return response.json()
+            return ScoringRiesgo(**response.json())
         except httpx.HTTPStatusError as e:
             raise HTTPException(status_code=e.response.status_code, detail="External API error")
         except httpx.RequestError as e:
             raise HTTPException(status_code=500, detail=f"A network error occurred: {e}")
+
+
+async def make_auditoria_de_riesgo() -> ScoringRiesgo:
+    UMBRAL: float = 0.1
+    scoring: ScoringRiesgo = await fetch_scoring_service(UMBRAL)
+    return scoring

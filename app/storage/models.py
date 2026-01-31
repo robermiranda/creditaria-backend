@@ -20,3 +20,11 @@ class Anualidades (SQLModel, table=True):
     id_grupo: str
 
 
+
+class Auditoria (SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    umbral: float
+    delay: float
+    randomVal: float
+    valida: bool
+    id_grupo: str

@@ -1,11 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from sqlmodel import create_engine, Session
 from app.lib.amortizacion import calcula_tabla_amortizacion
 from app.lib.util import genera_string_aleatorio
-from app.lib.external import fetch_scoring_service
-from app.storage.models import Amortizaciones, Anualidades
+from app.lib.external import make_auditoria_de_riesgo
 from app.storage.db import persiste_tabla_amortizacion
+from app.storage.db import persiste_auditoria_riesgo
 
 
 class Prestamo(BaseModel):
@@ -38,7 +37,10 @@ async def simulate(prestamo: Prestamo):
 	tasa_mes = prestamo_dic["tasa_anual"] / 12
 	prestamo_dic.update({"tasa_mes": tasa_mes})
 	tabla_amortizacion = calcula_tabla_amortizacion(prestamo_dic["monto"], tasa_mes, prestamo_dic["plazo_meses"])
+	id_grupo = genera_string_aleatorio(16)
+	auditoria = await make_auditoria_de_riesgo()
 	
-	persiste_tabla_amortizacion(prestamo_dic["nombre_identificador"], tabla_amortizacion)
-	
+	persiste_tabla_amortizacion(prestamo_dic["nombre_identificador"], id_grupo, tabla_amortizacion)
+	persiste_auditoria_riesgo(id_grupo, auditoria)
+
 	return tabla_amortizacion
