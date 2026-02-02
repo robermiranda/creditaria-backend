@@ -1,7 +1,10 @@
 from fastapi import FastAPI, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.lib.amortizacion import calcula_tabla_amortizacion
 from app.background.tasks import todo_in_background
+from app.storage.db import recupera_datos_amortizacion_from_db
+from typing import Any
 
 
 class Prestamo(BaseModel):
@@ -10,11 +13,42 @@ class Prestamo(BaseModel):
 	plazo_meses: int
 	nombre_identificador: str | None
 
+origins = [
+	"http://localhost:5173"
+]
+
 app = FastAPI()
+
+app.add_middleware (
+	CORSMiddleware,
+	allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():
 	return {"message": "Hello Creditaria with FastAPI"}
+
+
+@app.get(
+		"/identificador/{identificador}",
+		summary="Obtiene la tabla de amortización",
+		description="""
+			Obtiene la tabla de Amortización de la base de datos;
+			para lo cual es necesario proporcionar el identificador
+			de la tabla. Los datos obtenidos se recuperan de la
+			base de datos.
+		""")
+async def recuperaTablaAmortizacion(identificador: str) -> dict[str, Any] | None:
+	
+	if not identificador.strip:
+		return None
+	
+	tabla_amortizacion_y_datos: dict[str, Any] | None = recupera_datos_amortizacion_from_db(identificador)
+	
+	return tabla_amortizacion_y_datos
 
 
 @app.post(
