@@ -54,7 +54,13 @@ async def serve_creditaria_app():
 		""")
 async def recuperaTablaAmortizacion(identificador: str) -> dict[str, Any] | None:
 
-	if not identificador.strip:
+	if identificador is None:
+		return None
+	
+	if not isinstance(identificador, str):
+		return None
+	
+	if len(identificador) == 0:
 		return None
 
 	tabla_amortizacion_y_datos: dict[str, Any] | None = recupera_datos_amortizacion_from_db(identificador)

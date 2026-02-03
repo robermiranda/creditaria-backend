@@ -25,8 +25,8 @@ def recupera_tabla_amortizacion (id_grupo: str) -> Sequence[Amortizaciones]:
 
 	with Session(engine) as session:
 		statement = select(Amortizaciones).where(Amortizaciones.id_grupo == id_grupo)
-		amortizaciones = session.exec(statement).all()
-		return amortizaciones
+		amortizaciones = session.exec(statement)
+		return amortizaciones.all()
 
 
 def persiste_tabla_amortizacion (
@@ -83,8 +83,8 @@ def recupera_auditoria (id_grupo: str) -> Auditoria | None:
 
 	with Session(engine) as session:
 		statement = select(Auditoria).where(Auditoria.id_grupo == id_grupo)
-		auditoria = session.exec(statement).first()
-		return auditoria
+		auditoria = session.exec(statement)
+		return auditoria.first()
 	
 
 def persiste_auditoria_riesgo(id_grupo: str, scoring: ScoringRiesgo):
@@ -115,8 +115,8 @@ def recupera_anualidades (identificador: str):
 
 	with Session(engine) as session:
 		statement = select(Anualidades).where(Anualidades.nombre_identificador == identificador)
-		anualidad = session.exec(statement).first()
-		return anualidad
+		anualidad = session.exec(statement)
+		return anualidad.first()
 
 def recupera_datos_amortizacion_from_db (identificador: str)-> dict[str, Any] | None:
 	
