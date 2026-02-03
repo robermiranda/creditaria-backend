@@ -93,3 +93,8 @@ async def simulate(prestamo: Prestamo, background_tasks: BackgroundTasks):
 
 	print('###############> MAIN: SE RESPONDIENDO LA TABLA DE AMORTIZACIÓN')
 	return tabla_amortizacion
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
