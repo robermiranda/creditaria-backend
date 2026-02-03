@@ -7,9 +7,9 @@ from config import Settings
 from ..lib.external import ScoringRiesgo
 
 
-@lru_cache()
+@lru_cache
 def get_settings():
-    return Settings() # type: ignore
+    return Settings()
 
 settings = get_settings()
 engine = create_engine(settings.database_url)

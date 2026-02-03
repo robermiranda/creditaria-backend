@@ -14,12 +14,12 @@ async def todo_in_background (
     print('==============> BG: ID GRUPO', id_grupo)
 
     persiste_tabla_amortizacion(
-		prestamo["monto"],
-		prestamo["tasa_anual"],
-		prestamo["plazo_meses"],
-		prestamo["nombre_identificador"],
-		id_grupo,
-		tabla_amortizacion)
+        prestamo["monto"],
+        prestamo["tasa_anual"],
+        prestamo["plazo_meses"],
+        prestamo["nombre_identificador"],
+        id_grupo,
+        tabla_amortizacion)
     
     print('==============> BG: SE PERSISTE AMORTIZACION')
 
