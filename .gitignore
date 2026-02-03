@@ -29,3 +29,4 @@ htmlcov/
 # FastAPI specific (optional, depending on project setup)
 # If you generate static documentation files
 docs/build/
+.vercel
