@@ -1,10 +1,13 @@
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.lib.amortizacion import calcula_tabla_amortizacion
 from app.background.tasks import todo_in_background
 from app.storage.db import recupera_datos_amortizacion_from_db
 from typing import Any
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, FileResponse
+import os
 
 
 class Prestamo(BaseModel):
@@ -13,24 +16,32 @@ class Prestamo(BaseModel):
 	plazo_meses: int
 	nombre_identificador: str | None
 
-origins = [
-	"http://localhost:5173"
-]
 
 app = FastAPI()
 
-app.add_middleware (
-	CORSMiddleware,
-	allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+#origins = [
+#	"http://localhost:5173",
+#	"http://localhost:5173/identificador",
+#]
+#
+#app.add_middleware (
+#	CORSMiddleware,
+#	allow_origins=origins,
+#    allow_credentials=True,
+#    allow_methods=["*"],
+#    allow_headers=["*"],
+#)
 
-@app.get("/")
-async def root():
-	return {"message": "Hello Creditaria with FastAPI"}
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, 'public')
 
+app.mount("/public", StaticFiles(directory=STATIC_DIR), name="public")
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_creditaria_app():
+	with open(os.path.join(STATIC_DIR, 'index.html'), 'r') as f:
+		return f.read()
+	
 
 @app.get(
 		"/identificador/{identificador}",
@@ -42,12 +53,12 @@ async def root():
 			base de datos.
 		""")
 async def recuperaTablaAmortizacion(identificador: str) -> dict[str, Any] | None:
-	
+
 	if not identificador.strip:
 		return None
-	
+
 	tabla_amortizacion_y_datos: dict[str, Any] | None = recupera_datos_amortizacion_from_db(identificador)
-	
+
 	return tabla_amortizacion_y_datos
 
 
@@ -68,11 +79,11 @@ async def simulate(prestamo: Prestamo, background_tasks: BackgroundTasks):
 	tasa_mes = prestamo_dic["tasa_anual"] / 12
 	prestamo_dic.update({"tasa_mes": tasa_mes})
 	tabla_amortizacion = calcula_tabla_amortizacion(prestamo_dic["monto"], tasa_mes, prestamo_dic["plazo_meses"])
-	
+
 	background_tasks.add_task (
 		todo_in_background,
 		prestamo_dic,
 		tabla_amortizacion )
-	
+
 	print('###############> MAIN: SE RESPONDIENDO LA TABLA DE AMORTIZACIÓN')
 	return tabla_amortizacion
