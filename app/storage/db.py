@@ -1,6 +1,6 @@
 from sqlmodel import select, create_engine, Session
 from collections.abc import Sequence
-from app.storage.models import Amortizaciones, Anualidades, Auditoria, SelectAnualidades
+from app.storage.models import Amortizaciones, Anualidades, Auditoria
 from functools import lru_cache
 from typing import Any
 from config import Settings
@@ -113,14 +113,21 @@ def recupera_anualidades (identificador: str):
 	:type id_grupo: str
 	"""
 
+	result = None
+
 	with Session(engine) as session:
-		statement = select(SelectAnualidades).where(SelectAnualidades.nombre_identificador == identificador)
-		anualidad = session.exec(statement)
-		return anualidad.first()
+		statement = select(Anualidades)
+		anualidades = session.exec(statement).all()
+		for anualidad in anualidades:
+			if anualidad.nombre_identificador == identificador:
+				result = anualidad
+				break
+		
+		return result
 
 def recupera_datos_amortizacion_from_db (identificador: str)-> dict[str, Any] | None:
 	
-	anualidad: SelectAnualidades | None = recupera_anualidades(identificador)
+	anualidad: Anualidades | None = recupera_anualidades(identificador)
 	
 	if anualidad is None:
 		return None
