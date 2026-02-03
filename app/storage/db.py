@@ -9,7 +9,7 @@ from ..lib.external import ScoringRiesgo
 
 @lru_cache
 def get_settings():
-    return Settings()
+    return Settings() # type: ignore
 
 settings = get_settings()
 engine = create_engine(settings.database_url)
