@@ -6,15 +6,13 @@ from typing import Any
 from config import Settings
 from ..lib.external import ScoringRiesgo
 
-"""
 @lru_cache
 def get_settings():
     return Settings() # type: ignore
 
 settings = get_settings()
 engine = create_engine(settings.database_url)
-"""
-engine = create_engine('postgresql://postgres:SchA2LwqhKeoJjIS@db.lopmuyyhoesmmirrthzg.supabase.co:5432/postgres')
+
 
 def recupera_tabla_amortizacion (id_grupo: str) -> Sequence[Amortizaciones]:
 	"""
