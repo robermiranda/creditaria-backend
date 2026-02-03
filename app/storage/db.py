@@ -113,17 +113,11 @@ def recupera_anualidades (identificador: str):
 	:type id_grupo: str
 	"""
 
-	result = None
-
 	with Session(engine) as session:
-		statement = select(Anualidades)
-		anualidades = session.exec(statement).all()
-		for anualidad in anualidades:
-			if anualidad.nombre_identificador == identificador:
-				result = anualidad
-				break
+		statement = select(Anualidades).where(Anualidades.nombre_identificador == identificador)
+		anualidad = session.exec(statement).first()
 		
-		return result
+		return anualidad
 
 def recupera_datos_amortizacion_from_db (identificador: str)-> dict[str, Any] | None:
 	
