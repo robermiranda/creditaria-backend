@@ -21,7 +21,16 @@ class Anualidades (SQLModel, table=True):
     nombre_identificador: str | None = None
     id_grupo: str
 
-
+class SelectAnualidades (SQLModel, table=True):
+    __tablaname__: str = "anualidades"
+    id: int | None = Field(default=None, primary_key=True)
+    created_at: str
+    anualidad: float
+    nombre_identificador: str
+    id_grupo: str
+    monto: float
+    tasa_anual: float
+    plazo_meses: float
 
 class Auditoria (SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
