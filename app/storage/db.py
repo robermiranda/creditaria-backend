@@ -1,18 +1,20 @@
 from sqlmodel import select, create_engine, Session
 from collections.abc import Sequence
 from app.storage.models import Amortizaciones, Anualidades, Auditoria
-from functools import lru_cache
+#from functools import lru_cache
 from typing import Any
-from config import Settings
-from ..lib.external import ScoringRiesgo
+#from app.config import Settings
+from app.lib.external import ScoringRiesgo
 
+"""
 @lru_cache
 def get_settings():
     return Settings() # type: ignore
 
 settings = get_settings()
-engine = create_engine(settings.database_url)
+"""
 
+engine = create_engine("postgresql://postgres.lopmuyyhoesmmirrthzg:SchA2LwqhKeoJjIS@aws-1-us-west-1.pooler.supabase.com:5432/postgres")
 
 def recupera_tabla_amortizacion (id_grupo: str) -> Sequence[Amortizaciones]:
 	"""
